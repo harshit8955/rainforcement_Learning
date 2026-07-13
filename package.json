@@ -1,0 +1,16 @@
+{
+  "name": "arianta",
+  "version": "1.0.0",
+  "description": "Arianta — Premium Clothing Showcase",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["clothing", "fashion", "showcase"],
+  "author": "Arianta",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}
