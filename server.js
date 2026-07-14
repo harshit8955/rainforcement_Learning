@@ -9,8 +9,10 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 // Serve static files
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/images', express.static(path.join(__dirname, 'image')));
+app.use('/css', express.static(path.join(__dirname, 'css')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/data', express.static(path.join(__dirname, 'data')));
 
 // Helper: read products
 function getProducts() {
@@ -65,7 +67,7 @@ app.get('/api/categories', (req, res) => {
 
 // Fallback: serve index.html for any non-API route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Start server

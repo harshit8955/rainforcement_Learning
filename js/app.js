@@ -9,15 +9,15 @@ let activeFilter = 'All';
 // ─── Category metadata (images + descriptions) ───
 const categoryMeta = {
   'Dresses': {
-    image: '/images/WhatsApp Image 2026-07-13 at 1.55.47 PM.jpeg',
+    image: 'images/WhatsApp Image 2026-07-13 at 1.55.47 PM.jpeg',
     description: 'Effortless elegance'
   },
   'Kurtis & Sets': {
-    image: '/images/WhatsApp Image 2026-07-13 at 1.55.48 PM.jpeg',
+    image: 'images/WhatsApp Image 2026-07-13 at 1.55.48 PM.jpeg',
     description: 'Traditional charm'
   },
   'Co-ord Sets': {
-    image: '/images/WhatsApp Image 2026-07-13 at 1.55.48 PM (1).jpeg',
+    image: 'images/WhatsApp Image 2026-07-13 at 1.55.48 PM (1).jpeg',
     description: 'Modern pairings'
   }
 };
@@ -161,21 +161,45 @@ function initNewsletter() {
 }
 
 // ═══════════════════════════════════════════════════════
-// FETCH PRODUCTS
+// FETCH PRODUCTS — API first, then static JSON fallback
 // ═══════════════════════════════════════════════════════
 async function fetchProducts() {
   try {
     // Show skeletons while loading
     showLoadingSkeletons();
 
-    const res = await fetch('/api/products');
-    const data = await res.json();
+    let products = null;
 
-    if (data.success) {
-      allProducts = data.products;
+    // Try 1: Express API (local development)
+    try {
+      const res = await fetch('api/products');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) products = data.products;
+      }
+    } catch (e) {
+      // API not available, will try static fallback
+    }
+
+    // Try 2: Static JSON file (GitHub Pages / static hosting)
+    if (!products) {
+      try {
+        const res = await fetch('data/products.json');
+        if (res.ok) {
+          products = await res.json();
+        }
+      } catch (e) {
+        // Static file also not available
+      }
+    }
+
+    if (products && products.length > 0) {
+      allProducts = products;
       renderCategories();
       renderFilterPills();
       renderProducts(allProducts);
+    } else {
+      throw new Error('No products loaded');
     }
   } catch (err) {
     console.error('Failed to fetch products:', err);
