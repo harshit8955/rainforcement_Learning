@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Batch Classification — VisionAI{% endblock %}
+{% block content %}
+<section class="page-heading"><p class="eyebrow">MULTI IMAGE</p><h1>Classify a batch</h1><p>Analyze up to 10 images and export the results.</p></section>
+<section class="card"><input id="batch-input" type="file" multiple accept=".jpg,.jpeg,.png,image/jpeg,image/png"><button class="button primary" id="batch-submit" type="button">Run batch</button><button class="button ghost" id="batch-clear" type="button">Clear</button><p class="form-message" id="batch-message"></p><div id="batch-results"></div></section>
+<script src="/js/batch.js" defer></script>
+{% endblock %}
+

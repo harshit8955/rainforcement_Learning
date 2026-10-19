@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Classifier — VisionAI{% endblock %}
+{% block content %}
+<section class="page-heading"><p class="eyebrow">SINGLE IMAGE</p><h1>Classify an image</h1><p>Upload an image and send it to the configured inference service.</p></section>
+<section class="classifier-layout">
+  <form id="classifier-form" class="card upload-card">
+    <label class="dropzone" id="dropzone" for="image-input"><span class="upload-icon">＋</span><strong>Drop your image here</strong><small>or click to browse · JPG, JPEG, PNG · max 10 MB</small><input id="image-input" name="image" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" hidden></label>
+    <div id="preview" class="preview hidden"><img id="preview-image" alt="Selected preview"><div><strong id="file-name"></strong><small id="file-meta"></small></div><button id="remove-image" type="button" class="icon-button">×</button></div>
+    <button class="button primary full" id="classify-button" type="submit">Classify image</button>
+    <p class="form-message" id="form-message" role="alert"></p>
+  </form>
+  <section id="result" class="card result-card hidden" aria-live="polite"><p class="eyebrow">PREDICTION</p><h2 id="result-label">—</h2><div class="confidence"><div><span>Confidence</span><strong id="result-confidence">—</strong></div><div class="bar"><i id="confidence-bar"></i></div></div><div id="probabilities" class="probabilities"></div><small id="result-meta"></small><div id="feedback" class="feedback hidden"><p>Was this prediction correct? Your answer improves the next model version.</p><button class="button ghost feedback-button" data-label="cat" type="button">It is a cat</button><button class="button ghost feedback-button" data-label="dog" type="button">It is a dog</button><span id="feedback-message"></span></div></section>
+</section>
+<script src="/js/classifier.js?v=2" defer></script>
+{% endblock %}

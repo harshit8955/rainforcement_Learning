@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}VisionAI — Turn Images Into Intelligence{% endblock %}
+{% block content %}
+<section class="welcome">
+  <div class="welcome-mark">◈</div>
+  <p class="eyebrow">VISIONAI WORKSPACE</p>
+  <h1>What will you <span>analyze?</span></h1>
+  <p class="lead">Upload an image and let our transfer-learning pipeline turn pixels into a clear, explainable prediction.</p>
+  <a class="composer" href="/classifier"><span class="composer-icon">＋</span><span>Start a new image analysis</span><span class="composer-arrow">↗</span></a>
+</section>
+<section class="quick-start">
+  <p class="section-label">Explore VisionAI</p>
+  <div class="grid three">
+    <a class="card shortcut" href="/classifier"><span class="shortcut-icon blue">◉</span><h3>Single image</h3><p>Classify one image with confidence details.</p><span class="shortcut-arrow">→</span></a>
+    <a class="card shortcut" href="/batch"><span class="shortcut-icon violet">▦</span><h3>Batch analysis</h3><p>Process multiple images in one request.</p><span class="shortcut-arrow">→</span></a>
+    <a class="card shortcut" href="/metrics"><span class="shortcut-icon green">⌁</span><h3>Model insights</h3><p>Review evaluation artifacts and metrics.</p><span class="shortcut-arrow">→</span></a>
+  </div>
+</section>
+<section class="trust-row"><span><i class="status-dot"></i> Inference-ready architecture</span><span>MobileNetV2</span><span>Private by design</span></section>
+{% endblock %}

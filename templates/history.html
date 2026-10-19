@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block title %}History — VisionAI{% endblock %}
+{% block content %}
+<section class="page-heading"><p class="eyebrow">OPTIONAL STORAGE</p><h1>Prediction history</h1><p id="history-status">Loading history…</p></section>
+<section class="card"><button class="button danger" id="clear-history" type="button">Clear history</button><div class="table-wrap"><table><thead><tr><th>Filename</th><th>Class</th><th>Confidence</th><th>Time</th></tr></thead><tbody id="history-body"></tbody></table></div></section>
+<script src="/js/history.js" defer></script>
+{% endblock %}
+
