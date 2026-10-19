@@ -14,7 +14,7 @@ CLASS_NAMES = ["cat", "dog"]
 
 def authorized():
     configured = os.getenv("INFERENCE_API_KEY", "")
-    return not configured or request.headers.get("Authorization") == f"Bearer {configured}"
+    return not configured or request.headers.get("Authorization") == "Bearer " + configured
 
 
 @app.get("/health")
@@ -44,3 +44,4 @@ def predict():
     prediction = get_model().predict(image)
     prediction["inference_ms"] = round((time.perf_counter() - started) * 1000)
     return jsonify({"success": True, "prediction": prediction})
+

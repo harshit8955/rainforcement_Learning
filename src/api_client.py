@@ -16,7 +16,7 @@ class InferenceClient:
         self.timeout = timeout
 
     def _headers(self):
-        return {"Authorization": f"Bearer {self.api_key}"} if self.api_key else {}
+        return {"Authorization": "Bearer " + self.api_key} if self.api_key else {}
 
     def health(self):
         if not self.base_url:
@@ -66,3 +66,4 @@ class InferenceClient:
             raise InferenceClientError("The inference service is unavailable.", 502) from exc
         except ValueError as exc:
             raise InferenceClientError("The inference service returned invalid JSON.", 502) from exc
+

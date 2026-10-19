@@ -9,10 +9,19 @@ from pathlib import Path
 
 def build_generators(tf, root, size, batch):
     preprocessing = tf.keras.applications.mobilenet_v2.preprocess_input
-    common = dict(target_size=(size, size), batch_size=batch, class_mode="binary", preprocessing_function=preprocessing)
-    train = tf.keras.preprocessing.image.ImageDataGenerator(rotation_range=15, zoom_range=.15, horizontal_flip=True).flow_from_directory(root / "train", shuffle=True, **common)
-    validation = tf.keras.preprocessing.image.ImageDataGenerator().flow_from_directory(root / "validation", shuffle=False, **common)
-    test = tf.keras.preprocessing.image.ImageDataGenerator().flow_from_directory(root / "test", shuffle=False, **common)
+    common = dict(target_size=(size, size), batch_size=batch, class_mode="binary")
+    train = tf.keras.preprocessing.image.ImageDataGenerator(
+        rotation_range=15,
+        zoom_range=.15,
+        horizontal_flip=True,
+        preprocessing_function=preprocessing,
+    ).flow_from_directory(root / "train", shuffle=True, **common)
+    validation = tf.keras.preprocessing.image.ImageDataGenerator(
+        preprocessing_function=preprocessing
+    ).flow_from_directory(root / "validation", shuffle=False, **common)
+    test = tf.keras.preprocessing.image.ImageDataGenerator(
+        preprocessing_function=preprocessing
+    ).flow_from_directory(root / "test", shuffle=False, **common)
     return train, validation, test
 
 
@@ -24,6 +33,7 @@ def main():
     args = parser.parse_args()
     import tensorflow as tf
     args.output.mkdir(parents=True, exist_ok=True)
+    Path("artifacts").mkdir(parents=True, exist_ok=True)
     train, validation, test = build_generators(tf, args.dataset, 224, 32)
     base = tf.keras.applications.MobileNetV2(include_top=False, weights="imagenet", input_shape=(224, 224, 3))
     base.trainable = False
