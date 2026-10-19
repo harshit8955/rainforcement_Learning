@@ -11,3 +11,4 @@ artifacts/*.png
 artifacts/*.json
 *.pyc
 .vercel/
+.vercel
