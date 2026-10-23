@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}PetVision{% endblock %}</title>
-  <link rel="stylesheet" href="/css/style.css?v=3">
-  <script src="/js/theme.js?v=3" defer></script>
-  <script src="/js/main.js?v=3" defer></script>
+  <link rel="stylesheet" href="/css/style.css?v=4">
+  <script src="/js/theme.js?v=4" defer></script>
+  <script src="/js/main.js?v=4" defer></script>
 </head>
 <body>
   <div class="app-shell">
@@ -17,7 +17,7 @@
         <a class="{% if (page == 'home' and item == 'Home') or (page == 'classifier' and item == 'Classify') %}active{% endif %}" href="{{ href }}">{{ item }}</a>
         {% endfor %}
       </nav>
-      <div class="topbar-actions"><button class="theme-toggle" type="button" aria-label="Toggle theme"><span>☀</span><i></i><b>◐</b></button><a class="top-upload" href="/classifier">▣ &nbsp; Upload &amp; Predict</a></div>
+      <div class="topbar-actions"><button class="theme-toggle" type="button" aria-label="Toggle theme" aria-pressed="false"><span>☀</span><i></i><b>◐</b></button><a class="top-upload" href="/classifier">▣ &nbsp; Upload &amp; Predict</a></div>
     </header>
     <main>{% block content %}{% endblock %}</main>
     <footer><span>PetVision</span> · Built for responsible image intelligence</footer>
