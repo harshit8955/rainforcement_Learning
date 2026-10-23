@@ -4,14 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}PetVision{% endblock %}</title>
-  <link rel="stylesheet" href="/css/style.css?v=4">
-  <script src="/js/theme.js?v=4" defer></script>
-  <script src="/js/main.js?v=4" defer></script>
+  <link rel="stylesheet" href="/css/style.css?v=5">
+  <script src="/js/theme.js?v=5" defer></script>
+  <script src="/js/main.js?v=5" defer></script>
 </head>
 <body>
   <div class="app-shell">
     <header class="topbar">
-      <a class="brand" href="/"><span class="brand-mark">🐾</span><span>Pet<span>Vision</span></span><small>AI Image Classifier</small></a>
+      <a class="brand" href="/" aria-label="PetVision home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><b></b></span><span>Pet<span>Vision</span></span><small>AI Image Classifier</small></a>
       <nav class="top-nav">
         {% for item, href in [("Home", "/"), ("Classify", "/classifier"), ("About", "/about"), ("Dataset", "/history"), ("Contact", "/about")] %}
         <a class="{% if (page == 'home' and item == 'Home') or (page == 'classifier' and item == 'Classify') %}active{% endif %}" href="{{ href }}">{{ item }}</a>
