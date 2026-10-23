@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: petvision-inference
+    runtime: docker
+    rootDir: inference_service
+    plan: starter
+    healthCheckPath: /health
+    envVars:
+      - key: MODEL_PATH
+        value: /service/inference_service/model.keras
+      - key: CLASS_NAMES_PATH
+        value: /service/inference_service/class_names.json
+      - key: INFERENCE_API_KEY
+        sync: false

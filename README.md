@@ -61,6 +61,18 @@ gunicorn --bind 0.0.0.0:8000 inference_service.app:app
 
 Set `INFERENCE_API_URL` and the matching `INFERENCE_API_KEY` in the Flask environment. Use HTTPS for a hosted service.
 
+### Public inference deployment
+
+Vercel hosts the lightweight Flask gateway; it cannot host this TensorFlow service reliably. The included `inference_service\Dockerfile` and `render.yaml` deploy the model API to Render:
+
+1. Push the repository to GitHub.
+2. In Render, choose **New > Blueprint** and select this repository.
+3. Set a strong `INFERENCE_API_KEY` when Render asks for the secret.
+4. Copy the deployed service URL into Vercel as `INFERENCE_API_URL` and add the same API key as `INFERENCE_API_KEY`.
+5. Redeploy Vercel and verify `/api/health` returns `"ready": true`.
+
+The model artifact must be present at `inference_service\model.keras` and its labels at `inference_service\class_names.json` before creating the Render service.
+
 ## Tests
 
 ```powershell
