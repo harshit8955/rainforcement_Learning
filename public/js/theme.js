@@ -1,4 +1,4 @@
-const savedTheme = localStorage.getItem("visionai-theme") || "dark";
+const savedTheme = localStorage.getItem("visionai-theme") || "light";
 document.documentElement.dataset.theme = savedTheme;
 document.addEventListener("click", (event) => {
   if (!event.target.closest(".theme-toggle")) return;
@@ -6,4 +6,3 @@ document.addEventListener("click", (event) => {
   document.documentElement.dataset.theme = theme;
   localStorage.setItem("visionai-theme", theme);
 });
-

@@ -1,15 +1,22 @@
 {% extends "base.html" %}
-{% block title %}Classifier — VisionAI{% endblock %}
+{% block title %}Classify — PetVision{% endblock %}
 {% block content %}
-<section class="page-heading"><p class="eyebrow">SINGLE IMAGE</p><h1>Classify an image</h1><p>Upload an image and send it to the configured inference service.</p></section>
-<section class="classifier-layout">
-  <form id="classifier-form" class="card upload-card">
-    <label class="dropzone" id="dropzone" for="image-input"><span class="upload-icon">＋</span><strong>Drop your image here</strong><small>or click to browse · JPG, JPEG, PNG · max 10 MB</small><input id="image-input" name="image" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" hidden></label>
+<section class="pet-hero">
+  <div class="pet-orb pet-orb-left">🐱</div><div class="pet-orb pet-orb-right">🐶</div>
+  <p class="eyebrow">PETVISION AI</p>
+  <h1><span>Cat</span> vs <em>Dog</em> Classifier</h1>
+  <p>Upload an image and let our AI model predict whether it's a Cat or a Dog 🐾</p>
+</section>
+<section class="classifier-layout pet-classifier">
+  <form id="classifier-form" class="pet-upload-card">
+    <label class="dropzone" id="dropzone" for="image-input"><span class="upload-cloud">☁</span><strong>Drag &amp; Drop an image here</strong><small>or</small><span class="choose-image">▣ &nbsp; Choose Image</span><small>Supports: JPG, PNG, JPEG | Max Size: 10MB</small><input id="image-input" name="image" type="file" accept=".jpg,.jpeg,.png,image/jpeg,image/png" hidden></label>
+    <div class="sample-row"><strong>Try with sample images</strong><button type="button" class="sample-pet">🐱</button><button type="button" class="sample-pet">😺</button><button type="button" class="sample-pet">🐶</button><button type="button" class="sample-pet">🐕</button><button type="button" class="sample-pet">🐾</button></div>
     <div id="preview" class="preview hidden"><img id="preview-image" alt="Selected preview"><div><strong id="file-name"></strong><small id="file-meta"></small></div><button id="remove-image" type="button" class="icon-button">×</button></div>
-    <button class="button primary full" id="classify-button" type="submit">Classify image</button>
+    <button class="button primary full" id="classify-button" type="submit">🔍 &nbsp; Predict Pet</button>
     <p class="form-message" id="form-message" role="alert"></p>
   </form>
-  <section id="result" class="card result-card hidden" aria-live="polite"><p class="eyebrow">PREDICTION</p><h2 id="result-label">—</h2><div class="confidence"><div><span>Confidence</span><strong id="result-confidence">—</strong></div><div class="bar"><i id="confidence-bar"></i></div></div><div id="probabilities" class="probabilities"></div><small id="result-meta"></small><div id="feedback" class="feedback hidden"><p>Was this prediction correct? Your answer improves the next model version.</p><button class="button ghost feedback-button" data-label="cat" type="button">It is a cat</button><button class="button ghost feedback-button" data-label="dog" type="button">It is a dog</button><span id="feedback-message"></span></div></section>
+  <section id="result" class="pet-result-card hidden" aria-live="polite"><h2>📊 &nbsp; Prediction Result</h2><div class="result-inner"><div class="result-image"><span>🐾</span><img id="result-preview" alt="Prediction preview"></div><div class="result-summary"><small>Predicted Class</small><h3 id="result-label">—</h3><div class="confidence"><div><span>Confidence</span><strong id="result-confidence">—</strong></div><div class="bar"><i id="confidence-bar"></i></div></div></div><div class="probability-panel"><strong>🐾 &nbsp; Probabilities</strong><div id="probabilities" class="probabilities"></div></div></div><small id="result-meta"></small><div id="feedback" class="feedback hidden"><p>Was this prediction correct? Your answer improves the next model version.</p><button class="button ghost feedback-button" data-label="cat" type="button">It is a cat</button><button class="button ghost feedback-button" data-label="dog" type="button">It is a dog</button><span id="feedback-message"></span></div></section>
 </section>
+<section class="pet-features"><article><span>⚡</span><div><strong>Fast Prediction</strong><small>Get instant results using our trained AI model</small></div></article><article><span>🎯</span><div><strong>High Accuracy</strong><small>Trained on thousands of cat and dog images</small></div></article><article><span>🛡</span><div><strong>Easy to Use</strong><small>Just upload an image and get prediction</small></div></article><article><span>⚙</span><div><strong>Built with AI</strong><small>Deep Learning for image classification</small></div></article></section>
 <script src="/js/classifier.js?v=2" defer></script>
 {% endblock %}

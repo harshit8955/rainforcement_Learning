@@ -3,38 +3,24 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}VisionAI{% endblock %}</title>
-  <link rel="stylesheet" href="/css/style.css?v=2">
-  <script src="/js/theme.js?v=2" defer></script>
-  <script src="/js/main.js?v=2" defer></script>
+  <title>{% block title %}PetVision{% endblock %}</title>
+  <link rel="stylesheet" href="/css/style.css?v=3">
+  <script src="/js/theme.js?v=3" defer></script>
+  <script src="/js/main.js?v=3" defer></script>
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="sidebar-top">
-      <a class="brand" href="/"><span class="brand-mark">◈</span> Vision<span>AI</span></a>
-      <button class="sidebar-collapse" aria-label="Collapse navigation">‹</button>
-    </div>
-    <a class="new-analysis" href="/classifier"><span>＋</span> New analysis</a>
-    <p class="nav-label">Workspace</p>
-    <nav class="side-nav">
-      {% for item, href, icon in [("Home", "/", "⌂"), ("Classifier", "/classifier", "◉"), ("Batch", "/batch", "▦"), ("History", "/history", "◷"), ("Metrics", "/metrics", "⌁"), ("About", "/about", "ⓘ")] %}
-      <a class="{% if page == item|lower %}active{% endif %}" href="{{ href }}"><span>{{ icon }}</span>{{ item }}</a>
-      {% endfor %}
-    </nav>
-    <div class="sidebar-bottom">
-      <a href="/about"><span class="status-dot"></span> Model workspace</a>
-      <button class="theme-toggle" type="button" aria-label="Toggle theme"><span>◐</span> Appearance</button>
-    </div>
-  </aside>
   <div class="app-shell">
     <header class="topbar">
-      <button class="menu-toggle" aria-label="Toggle menu">☰</button>
-      <span class="mobile-title">VisionAI</span>
-      <span class="topbar-context">{% if page == "home" %}Workspace{% else %}{{ page|title }}{% endif %}</span>
-      <div class="topbar-actions"><a href="/about">Docs</a><span class="avatar">H</span></div>
+      <a class="brand" href="/"><span class="brand-mark">🐾</span><span>Pet<span>Vision</span></span><small>AI Image Classifier</small></a>
+      <nav class="top-nav">
+        {% for item, href in [("Home", "/"), ("Classify", "/classifier"), ("About", "/about"), ("Dataset", "/history"), ("Contact", "/about")] %}
+        <a class="{% if (page == 'home' and item == 'Home') or (page == 'classifier' and item == 'Classify') %}active{% endif %}" href="{{ href }}">{{ item }}</a>
+        {% endfor %}
+      </nav>
+      <div class="topbar-actions"><button class="theme-toggle" type="button" aria-label="Toggle theme"><span>☀</span><i></i><b>◐</b></button><a class="top-upload" href="/classifier">▣ &nbsp; Upload &amp; Predict</a></div>
     </header>
     <main>{% block content %}{% endblock %}</main>
-    <footer><span>VisionAI</span> · Built for responsible image intelligence</footer>
+    <footer><span>PetVision</span> · Built for responsible image intelligence</footer>
   </div>
 </body>
 </html>
