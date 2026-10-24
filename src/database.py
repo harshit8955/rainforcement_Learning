@@ -24,6 +24,10 @@ class HistoryStore:
                     connection.execute("ALTER TABLE predictions ADD COLUMN feedback_at TEXT")
                 if "image_path" not in columns:
                     connection.execute("ALTER TABLE predictions ADD COLUMN image_path TEXT")
+                if "corrected_breed" not in columns:
+                    connection.execute("ALTER TABLE predictions ADD COLUMN corrected_breed TEXT")
+                if "correction_path" not in columns:
+                    connection.execute("ALTER TABLE predictions ADD COLUMN correction_path TEXT")
 
     def status(self):
         return {"configured": self.enabled, "persistent": self.enabled}
@@ -45,16 +49,34 @@ class HistoryStore:
             )
             return cursor.lastrowid
 
-    def save_feedback(self, prediction_id, feedback_label):
+    def save_feedback(self, prediction_id, feedback_label, corrected_breed=None):
         if not self.path:
             raise LookupError("Feedback storage is not configured.")
         with sqlite3.connect(self.path) as connection:
+            existing = connection.execute("SELECT image_path FROM predictions WHERE id = ?", (prediction_id,)).fetchone()
             cursor = connection.execute(
-                "UPDATE predictions SET feedback_label = ?, feedback_at = ? WHERE id = ?",
-                (feedback_label, datetime.now(timezone.utc).isoformat(), prediction_id),
+                "UPDATE predictions SET feedback_label = ?, corrected_breed = ?, feedback_at = ? WHERE id = ?",
+                (feedback_label, corrected_breed, datetime.now(timezone.utc).isoformat(), prediction_id),
             )
             if cursor.rowcount == 0:
                 raise LookupError("Prediction was not found.")
+            if corrected_breed:
+                self.feedback_dir.mkdir(parents=True, exist_ok=True)
+                correction_path = self.feedback_dir / f"pending_{prediction_id}_{uuid4().hex}.json"
+                correction_path.write_text(
+                    '{"prediction_id": %s, "label": "%s", "breed": "%s", "image_path": %s}\n'
+                    % (
+                        int(prediction_id),
+                        feedback_label,
+                        corrected_breed.replace('"', ""),
+                        '"' + existing[0].replace("\\", "/") + '"' if existing and existing[0] else "null",
+                    ),
+                    encoding="utf-8",
+                )
+                connection.execute(
+                    "UPDATE predictions SET correction_path = ? WHERE id = ?",
+                    (str(correction_path), prediction_id),
+                )
 
     def list_recent(self):
         if not self.path:

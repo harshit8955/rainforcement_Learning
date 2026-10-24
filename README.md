@@ -1,6 +1,6 @@
-# VisionAI
+# PetVision
 
-VisionAI is a Flask image-classification portfolio project for cat-versus-dog recognition. The web application is intentionally lightweight: Vercel hosts the Flask UI and API gateway, while a separate Python service hosts TensorFlow and the trained MobileNetV2 model.
+PetVision is a Flask image-classification application for cat-versus-dog recognition. The responsive UI includes drag-and-drop uploads, image previews, confidence meters, OOD guardrails, a trait/care profile, optional health-triage messaging, and a feedback loop. Vercel hosts the Flask UI and API gateway, while a separate Python service hosts TensorFlow and the trained MobileNetV2 model.
 
 ## Architecture
 
@@ -22,7 +22,9 @@ Feedback does not silently retrain or replace the production model. To include a
 python training\retrain_from_feedback.py --database instance\visionai.db --dataset dataset --epochs 12
 ```
 
-Review the resulting evaluation metrics before copying the new `models\model.keras` artifact to the inference service. For production, use managed storage and authenticated user/session identifiers before enabling shared feedback collection.
+The command imports labeled feedback and writes the newly trained `model.keras` and `class_names.json` directly to `inference_service\`, which is the artifact directory used by the local and Docker inference service. Restart the inference service after retraining so it reloads the new model; the service caches the model in memory. Review the resulting evaluation metrics before deploying it. For production, use managed storage and authenticated user/session identifiers before enabling shared feedback collection.
+
+The baseline dataset is intentionally small, so unseen breeds, dark images, multiple animals, or obstructed subjects can still be misclassified. Add a larger, licensed, diverse dataset and review the test metrics before treating predictions as production-grade.
 
 ## Local setup
 
@@ -36,6 +38,45 @@ python app.py
 ```
 
 Open `http://127.0.0.1:5000`. For local Flask development, assets are served from `public/`; Vercel serves the same directory through its CDN.
+
+### Run the local inference service
+
+The Flask web gateway and TensorFlow inference service run as separate processes. If `.env` contains `INFERENCE_API_URL=http://127.0.0.1:8001`, start the model service in a second PowerShell window before uploading images:
+
+```powershell
+python -c "from inference_service.app import app; app.run(host='127.0.0.1', port=8001, debug=False)"
+```
+
+Wait for the first model load to finish, then verify:
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8001/health
+```
+
+It should return `"ready": true`. The gateway health check at `http://127.0.0.1:5000/api/health` should then report `"inference": {"ready": true}`. In production, deploy `inference_service` using the included Dockerfile/Render blueprint and set `INFERENCE_API_URL` to that HTTPS service URL instead of `127.0.0.1`.
+
+### Prediction API
+
+The browser uses `POST /api/predict` with a multipart `image` field. `POST /predict` is also available as a compatibility alias for clients integrating directly with the gateway. Both routes validate file type and size, then return:
+
+```json
+{
+  "success": true,
+  "prediction": {
+    "label": "cat",
+    "confidence": 0.965,
+    "probabilities": {"cat": 0.965, "dog": 0.035}
+  },
+  "prediction_id": 1
+}
+```
+
+### Advanced profile and safety behavior
+
+- **OOD guardrail:** results below `OOD_CONFIDENCE_THRESHOLD` (default `0.62`) are returned as `is_pet: false` with an explicit upload warning. Tune this using the environment variable after evaluating your model on non-pet images.
+- **Breed and traits:** the gateway returns a stable `profile` schema (`breed`, `breed_confidence`, `traits`, and `care`). The current baseline is intentionally labeled a mixed-breed estimate; replace `enrich_prediction` in `app.py` with a validated breed/attribute model rather than presenting heuristic output as clinical or breed certainty.
+- **Health Check:** the toggle returns a screening state and mandatory veterinary disclaimer. It does not diagnose disease. Connect a separately validated veterinary anomaly model before enabling automated alerts.
+- **Active learning:** corrected feedback is stored in the configured feedback directory as a pending JSON manifest linked to the original uploaded image, and is also recorded in SQLite.
 
 ## Training
 

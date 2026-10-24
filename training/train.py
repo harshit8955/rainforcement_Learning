@@ -43,8 +43,12 @@ def main():
     model.compile(optimizer="adam", loss="binary_crossentropy", metrics=["accuracy"])
     history = model.fit(train, validation_data=validation, epochs=args.epochs, callbacks=[tf.keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)])
     model.save(args.output / "model.keras")
+    class_names = [
+        name.rstrip("s")
+        for name, _ in sorted(train.class_indices.items(), key=lambda item: item[1])
+    ]
     with open(args.output / "class_names.json", "w", encoding="utf-8") as file:
-        json.dump([name for name, _ in sorted(train.class_indices.items(), key=lambda item: item[1])], file)
+        json.dump(class_names, file)
     with open("artifacts/training_history.json", "w", encoding="utf-8") as file:
         json.dump({key: [float(value) for value in values] for key, values in history.history.items()}, file)
     print(model.evaluate(test, return_dict=True))

@@ -13,5 +13,6 @@ class Config:
     INFERENCE_API_URL = os.getenv("INFERENCE_API_URL", "").rstrip("/")
     INFERENCE_API_KEY = os.getenv("INFERENCE_API_KEY", "")
     INFERENCE_TIMEOUT_SECONDS = float(os.getenv("INFERENCE_TIMEOUT_SECONDS", "30"))
+    OOD_CONFIDENCE_THRESHOLD = float(os.getenv("OOD_CONFIDENCE_THRESHOLD", "0.62"))
     DATABASE_URL = os.getenv("DATABASE_URL", "")
     FEEDBACK_DIR = os.getenv("FEEDBACK_DIR", "instance/feedback")

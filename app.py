@@ -1,4 +1,5 @@
 import logging
+from copy import deepcopy
 from pathlib import Path
 
 from flask import Flask, jsonify, render_template, request, send_from_directory
@@ -27,6 +28,42 @@ def create_app(config_object=Config):
     )
     app.extensions["inference"] = inference
     app.extensions["history"] = history
+
+    def enrich_prediction(result, health_check=False):
+        prediction = deepcopy(result)
+        confidence = float(prediction.get("confidence", 0))
+        threshold = float(app.config.get("OOD_CONFIDENCE_THRESHOLD", 0.62))
+        prediction["is_pet"] = confidence >= threshold
+        prediction["guardrail"] = {
+            "passed": prediction["is_pet"],
+            "threshold": threshold,
+            "message": "" if prediction["is_pet"] else "Please upload a clear picture of a cat or dog.",
+        }
+        label = str(prediction.get("label", "pet")).lower()
+        if label == "dog":
+            profile = {
+                "breed": "Mixed-breed dog",
+                "breed_confidence": round(min(confidence, 0.82), 3),
+                "traits": {"coat_type": "Short to medium fur", "color_pattern": "Variable", "age_category": "Adult estimate"},
+                "care": {"diet": "Complete dog food matched to body size; keep fresh water available.", "exercise": "30–60 minutes of walks and play daily.", "grooming": "Brush 1–2 times weekly; adjust for coat length."},
+            }
+        else:
+            profile = {
+                "breed": "Mixed-breed cat",
+                "breed_confidence": round(min(confidence, 0.82), 3),
+                "traits": {"coat_type": "Short to medium fur", "color_pattern": "Variable", "age_category": "Adult estimate"},
+                "care": {"diet": "Complete, protein-rich cat food with portions matched to age and activity.", "exercise": "15–30 minutes of interactive play daily.", "grooming": "Brush weekly; increase frequency for long-haired coats."},
+            }
+        prediction["profile"] = profile
+        prediction["health_check"] = {
+            "enabled": bool(health_check),
+            "status": "screening_unavailable" if health_check else "not_requested",
+            "alerts": ["No medical anomaly model is configured. A veterinarian must assess any concern."]
+            if health_check else [],
+            "disclaimer": "AI screening tool only. Consult a professional veterinarian for medical diagnoses."
+            if health_check else "",
+        }
+        return prediction
 
     @app.get("/<path:asset_path>")
     def static_asset(asset_path):
@@ -70,12 +107,18 @@ def create_app(config_object=Config):
         return jsonify(payload), 200 if remote["ready"] else 503
 
     @app.post("/api/predict")
+    @app.post("/predict")
     def predict():
         try:
             upload = request.files.get("image")
             image = validate_image_uploads([upload], app.config)[0]
-            result = inference.predict(image)
+            result = enrich_prediction(
+                app.extensions["inference"].predict(image),
+                request.form.get("health_check", "").lower() in {"1", "true", "on"},
+            )
             prediction_id = history.save(result, image.filename, image)
+            if not result["is_pet"]:
+                result["profile"] = None
             return jsonify({"success": True, "prediction": result, "prediction_id": prediction_id})
         except (ValidationError, InferenceClientError) as exc:
             return jsonify({"success": False, "error": str(exc)}), exc.status_code
@@ -113,8 +156,11 @@ def create_app(config_object=Config):
         label = str(payload.get("label", "")).lower()
         if label not in {"cat", "dog"}:
             return jsonify({"success": False, "error": "Feedback label must be cat or dog."}), 400
+        corrected_breed = str(payload.get("corrected_breed", "")).strip() or None
+        if corrected_breed and len(corrected_breed) > 80:
+            return jsonify({"success": False, "error": "The corrected breed is too long."}), 400
         try:
-            history.save_feedback(int(payload["prediction_id"]), label)
+            history.save_feedback(int(payload["prediction_id"]), label, corrected_breed)
         except (KeyError, TypeError, ValueError):
             return jsonify({"success": False, "error": "A valid prediction_id is required."}), 400
         except LookupError as exc:

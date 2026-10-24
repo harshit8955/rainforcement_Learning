@@ -18,6 +18,12 @@ def main():
     parser.add_argument("--database", default="instance/visionai.db")
     parser.add_argument("--dataset", type=Path, default=Path("dataset"))
     parser.add_argument("--epochs", type=int, default=12)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        default=Path("inference_service"),
+        help="Directory for the model loaded by the inference service.",
+    )
     args = parser.parse_args()
 
     with sqlite3.connect(args.database) as connection:
@@ -42,7 +48,16 @@ def main():
         raise SystemExit("Feedback records exist, but their stored images are missing.")
 
     subprocess.run(
-        [sys.executable, "training/train.py", "--dataset", str(args.dataset), "--epochs", str(args.epochs)],
+        [
+            sys.executable,
+            "training/train.py",
+            "--dataset",
+            str(args.dataset),
+            "--epochs",
+            str(args.epochs),
+            "--output",
+            str(args.output),
+        ],
         check=True,
     )
 
